@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>System Monitoring</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200&family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .plotly-graph-div {
+            margin: auto;
+            width: 100px;
+            background-color: rgba(151, 128, 128, 0.688);
+            padding: 20px;
+        }
+
+        .outer_box_graph {
+            display: flex;
+            justify-content: space-evenly;
+            flex-wrap: wrap;
+
+        }
+
+        #cpu,
+        #men {
+            width: 40%;
+        }
+
+        .info {
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            width: 80%;
+            margin: auto;
+
+        }
+
+        .tag {
+            color: #3b3f4a;
+            font-weight: 700;
+            margin: 10px;
+            font-size: 20px;
+        }
+
+        .val {
+            font-weight: 400;
+            font-size: 20px;
+            margin: 10px;
+            color: green;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 style="text-align: start;margin: auto; color: green; width: 80%;">System Monitoring</h1>
+        <div class="outer_box_graph">
+            <div id="cpu"></div>
+            <div id="mem"></div>
+        </div>
+
+        {% if message %}
+        <div class="alert alert-danger">{{ message }}</div>
+        {% endif %}
+
+        <div class="info">
+            <h1 class="tag">Boot Time : </h1>
+            <h1 class="val">{{boot_time}}</h1>
+        </div>
+        <div class="info">
+            <h1 class="tag">CPU Count : </h1>
+            <h1 class="val">{{cpu_count}}</h1>
+        </div>
+
+        <div class="info">
+            <h1 class="tag">CPU current frequency : </h1>
+            <h1 class="val">{{cpu_freq}} Mhz</h1>
+        </div>
+        <div class="info">
+            <h1 class="tag">Total Memory : </h1>
+            <h1 class="val">{{virtual_men.total}} b </h1>
+            <h1 class="tag"> Memory Used : </h1>
+            <h1 class="val">{{virtual_men.used}} b </h1>
+            <h1 class="tag"> Memory Available: </h1>
+            <h1 class="val">{{virtual_men.available}} b </h1>
+        </div>
+
+        <div class="info">
+            <h1 class="tag">Total space : </h1>
+            <h1 class="val">{{disk.total}} byte </h1>
+            <h1 class="tag">Used space : </h1>
+            <h1 class="val">{{disk.used}} byte</h1>
+            <h1 class="tag">Free space : </h1>
+            <h1 class="val">{{disk.free}} byte </h1>
+
+        </div>
+
+    
+	<style>
+		table {
+			border:1px solid #b3adad;
+			border-collapse:collapse;
+			padding:5px;
+		}
+		table th {
+			border:1px solid #b3adad;
+			padding:5px;
+			background: #f0f0f0;
+			color: #313030;
+		}
+		table td {
+			border:1px solid #b3adad;
+			text-align:center;
+			padding:5px;
+			background: #ffffff;
+			color: #313030;
+		}
+	</style>
+</head>
+<h1 style="text-align: center;">Processes</h1>
+<div style="height: 500px;overflow: scroll;padding: 10px;margin: 30px;border: solid black 1px;">
+	<table style="width: 100%;">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Username</th>
+				<th>Pid</th>
+			</tr>
+		</thead>
+		<tbody id="tb_data">
+			{% for i in proc_data %}
+    <div class="user_pod">
+        <tr>
+            <td>{{i.name}}</td>
+            <td>{{i.username}}</td>
+            <td>{{i.pid}}</td>
+        </tr>
+    </div>
+{% endfor %}
+			
+		</tbody>
+	</table>
+</div>
+
+    </div>
+    <script>
+        
+        var cpuGauge = {
+            type: "indicator",
+            mode: "gauge+number",
+            value: {{ cpu_metric }},
+            gauge: {
+                axis: { range: [null, 100] },
+                bar: { color: "#1f77b4" },
+                bgcolor: "white",
+                borderwidth: 2,
+                bordercolor: "#ccc",
+                steps: [
+                    { range: [0, 10], color: "#0a5d00" },
+                    { range: [10, 20], color: "#089000" },
+                    { range: [20, 30], color: "#1fc600" },
+                    { range: [30, 50], color: "#0eff00" },
+
+
+                    { range: [50, 75], color: "#ffe200" },
+                    { range: [75, 85], color: "#dbc300" },
+
+                    { range: [85, 95], color: "	#ff0000" },
+                    { range: [95, 100], color: "#c80000" },
+
+                ],
+                threshold: {
+                    line: { color: "red", width: 4 },
+                    thickness: 0.75,
+                    value: {{ cpu_metric }}
+                }
+            }
+        };
+        
+        var memGauge = {
+            type: "indicator",
+            mode: "gauge+number",
+            value: {{ mem_metric }},
+            gauge: {
+                axis: { range: [null, 100] },
+                bar: { color: "#1f77b4" },
+                bgcolor: "white",
+                borderwidth: 2,
+                bordercolor: "#ccc",
+                steps: [
+                { range: [0, 10], color: "#0a5d00" },
+                    { range: [10, 20], color: "#089000" },
+                    { range: [20, 30], color: "#1fc600" },
+                    { range: [30, 50], color: "#0eff00" },
+
+
+                    { range: [50, 75], color: "#ffe200" },
+                    { range: [75, 85], color: "#dbc300" },
+
+                    { range: [85, 95], color: "	#ff0000" },
+                    { range: [95, 100], color: "#c80000" },
+                ],
+                threshold: {
+                    line: { color: "red", width: 4 },
+                    thickness: 0.75,
+                    value: {{ mem_metric }}
+                }
+            }
+        };
+        var cpuGaugeLayout = { title: "CPU Utilization" };
+        var memGaugeLayout = {
+            title: "Memory Utilization",
+            width: 300,
+            height: 300
+        };
+
+        Plotly.newPlot('cpu', [cpuGauge], cpuGaugeLayout);
+        Plotly.newPlot('mem', [memGauge], memGaugeLayout);
+
+        // let tb_data=document.getElementById("tb_data");
+        // for (const iterator of {{proc_data}}) {
+        //     tb_data.innerHTML+=`
+        //     <tr>
+		// 		<td>${iterator.name}</td>
+		// 		<td>&nbsp;</td>
+		// 		<td>&nbsp;</td>
+		// 	</tr>
+        //     `
+            
+        // }
+    </script>
+</body>
+
+</html>
+
+
+
+
+
+<!-- 
+.button-50 {
+  appearance: button;
+  background-color: #000;
+  background-image: none;
+  border: 1px solid #000;
+  border-radius: 4px;
+  box-shadow: #fff 4px 4px 0 0,#000 4px 4px 0 1px;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: ITCAvantGardeStd-Bk,Arial,sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  margin: 0 5px 10px 0;
+  overflow: visible;
+  padding: 12px 40px;
+  text-align: center;
+  text-transform: none;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.button-50:focus {
+  text-decoration: none;
+}
+
+.button-50:hover {
+  text-decoration: none;
+}
+
+.button-50:active {
+  box-shadow: rgba(0, 0, 0, .125) 0 3px 5px inset;
+  outline: 0;
+}
+
+.button-50:not([disabled]):active {
+  box-shadow: #fff 2px 2px 0 0, #000 2px 2px 0 1px;
+  transform: translate(2px, 2px);
+}
+
+@media (min-width: 768px) {
+  .button-50 {
+    padding: 12px 50px;
+  }
+} -->
