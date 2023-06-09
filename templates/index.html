@@ -86,20 +86,20 @@
         </div>
         <div class="info">
             <h1 class="tag">Total Memory : </h1>
-            <h1 class="val">{{math.ceil(virtual_men.total/1000000000)}} Gb </h1>
+            <h1 class="val">{{(virtual_men.total/1000000000)}} Gb </h1>
             <h1 class="tag"> Memory Used : </h1>
-            <h1 class="val">{{virtual_men.used}} Gb </h1>
+            <h1 class="val">{{virtual_men.used/1000000000}} Gb </h1>
             <h1 class="tag"> Memory Available: </h1>
-            <h1 class="val">{{virtual_men.available}} Gb </h1>
+            <h1 class="val">{{virtual_men.available/1000000000}} Gb </h1>
         </div>
 
         <div class="info">
             <h1 class="tag">Total space : </h1>
-            <h1 class="val">{{disk.total}} Gb </h1>
+            <h1 class="val">{{disk.total/1000000000}} Gb </h1>
             <h1 class="tag">Used space : </h1>
-            <h1 class="val">{{disk.used}} Gb</h1>
+            <h1 class="val">{{disk.used/1000000000}} Gb</h1>
             <h1 class="tag">Free space : </h1>
-            <h1 class="val">{{disk.free}} Gb </h1>
+            <h1 class="val">{{disk.free/1000000000}} Gb </h1>
 
         </div>
 
