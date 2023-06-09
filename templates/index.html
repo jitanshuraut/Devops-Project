@@ -86,7 +86,7 @@
         </div>
         <div class="info">
             <h1 class="tag">Total Memory : </h1>
-            <h1 class="val">{{(virtual_men.total)}} Gb </h1>
+            <h1 class="val">{{math.ceil(virtual_men.total/1000000000)}} Gb </h1>
             <h1 class="tag"> Memory Used : </h1>
             <h1 class="val">{{virtual_men.used}} Gb </h1>
             <h1 class="tag"> Memory Available: </h1>
